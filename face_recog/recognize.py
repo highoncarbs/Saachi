@@ -61,7 +61,7 @@ print("Total labels: ", len(labels))
 # Using LBPH classifier 
 # ** Set API for all classifiers -> Haar Cascade , FisherFace ?
 
-face_algo = cv2.face.createLBPHFaceRecognizer()
+face_algo = cv2.face.LBPHFaceRecognizer_create()
 face_algo.train(faces , np.array(labels))
 
 def drw_rectangle(img , rect):
@@ -76,7 +76,8 @@ def predict_face(test_image):
 	face , rect = findFaces(image_temp)
 
 	label = face_algo.predict(face)
-	label_text = classes[label]
+	print label
+	label_text = classes[label[0]]
 	drw_rectangle(image_temp ,rect)
 	drw_text(image_temp , label_text , rect[0] , rect[1]-5)
 	return image_temp
@@ -88,9 +89,9 @@ test_img1 = cv2.imread(base_tests+"testmodi.jpg")
 test_img2 = cv2.imread(base_tests+"testrahul.jpeg")
 test_img3 = cv2.imread(base_tests+"testkejriwal.jpeg")
 
-pre_1 = predict(test_img1)
-pre_2 = predict(test_img2)
-pre_3 = predict(test_img3)
+pre_1 = predict_face(test_img1)
+pre_2 = predict_face(test_img2)
+pre_3 = predict_face(test_img3)
 
 print("Prediction complete biatch")
 plt.show( pre1)
