@@ -10,19 +10,22 @@ matplotlib.pyplot.ion()
 
 classes = ["", "Narendra Modi" , "Rahul Gandi"]
 
-def converttoRGB(imgage):
+def converttoRGB(image):
 	return cv2.cvtColor(image , cv2.COLOR_BGR2RGB)
 
 def findFaces(image, scaleFactor=1.2):
-	image_data =cv2.imread(image)
-	gray_img = cv2.cvtColor(image_data , cv2.COLOR_BGR2GRAY)
-	haar_face_cascade = cv2.CascadeClassifier('/home/padam/Documents/git/Saachi/data/haarcascade_frontalface_alt.xml')
-
-	face = haar_face_cascade.detectMultiScale(gray_img , scaleFactor=scaleFactor , minNeighbors=5)
-	print('Faces found : ' , len(face))
+	gray_img = cv2.cvtColor(image , cv2.COLOR_BGR2GRAY)
+	# print gray_img
+	face_cascade = cv2.CascadeClassifier('/home/padam/Documents/git/Saachi/data/lbpcascade_frontalface.xml')
+	# print haar_face_cascade
+	face = face_cascade.detectMultiScale(gray_img , scaleFactor= 1.2 , minNeighbors=5)
+	
+	if(len(face)==0):
+	#! Imp -> Check for No Images
+		return None , None
 	(x,y,w,h) = face[0]
 	# Return only detected face 
-	return gray_img[y:y+h , x:x+w] ,face[0] 
+	return gray_img[y:y+w , x:x+h] ,face[0] 
 
 def prepare_data(data_path):
 	dirs = os.listdir(data_path)
@@ -34,8 +37,10 @@ def prepare_data(data_path):
 		subject_images = os.listdir(subject_data_path)
 		label = int(dir_name.replace("s", ""))
 		for image_name in subject_images:
-			image_path = "subject_data_path"+"/"+image_name
+			image_path = subject_data_path+"/"+image_name
+			# print image_path
 			image_temp = cv2.imread(image_path)
+			# print image_temp
 			plt.show(image_temp)
 			plt.pause(0.1)
 
