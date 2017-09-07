@@ -1,3 +1,4 @@
+# coding -utf-8-
 from tweepy import Stream
 from tweepy import OAuthHandler
 from tweepy.streaming import StreamListener 
@@ -31,7 +32,8 @@ if (not api):
 
 search_results = api.search(q="Mulayam Singh Yadav" , count=100)
 
+result_tweets = []
+
 for result in search_results:
-	print result.text
-# for status in tweepy.Cursor(api.home_timeline).items(10):
-	# print(status.text)
+	result_tweets.append(result.text)
+
