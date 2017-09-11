@@ -14,5 +14,6 @@ def getSentiment(politician):
 	return jsonify({'data' : {'pos' : pos , 'neg' :neg} ,
 					'name' : tempstring})
 
+def recognize()
 if __name__ =="__main__":
 	app.run(port=5050,debug=True)

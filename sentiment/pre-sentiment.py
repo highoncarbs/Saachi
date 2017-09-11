@@ -151,51 +151,38 @@ test_vecs_w2v = scale(test_vecs_w2v)
 # Classifier using Feed Forward Neual Network
 
 import torch
-import torch.nn as nn 
-import torch.autograd.Variable as Variable 
+import torch.nn as nn  
 import torch.nn.functional as F 
-
+from torch.autograd import Variable
 learning_rate = 0.001
 num_epochs = 60
 D_in , H , D_out = 200 , 32 ,1
-
-# Model
-
-'''
 
 class net(nn.Module):
 	def __init__(self):
 		super(net , self).__init__()
 		self.l1 = nn.Linear(200, 32)
-		self.relu = F.ReLU()
+		self.relu = nn.ReLU()
 		self.l2 = nn.Linear(32 , 1)
-		self.sig = F.sigmoid()
-
 	def forward(self , x):
 		x = self.relu(self.l1(x))
 		x = self.l2(x)
-		x = self.sig(x)
+		x = F.sigmoid(x)
 		return x 
 
-# neural_net = net()
-'''
-
-# Sequential Model Approach 
-
-net = torch.nn.Sequential(
-		torch.nn.Linear(D_in , H),
-		torch.nn.ReLU(),
-		torch.nn.Linear(H , D_out),
-		torch.nn.Sigmoid()
-	)
 
 criterion = nn.CrossEntropyLoss()
+# optimizer = torch.optim.RMSprop(net.parameters() ,lr = learning_rate)
+
+inputs = torch.autograd.Variable(torch.from_numpy(train_vecs_w2v).float())
+targets = torch.autograd.Variable(torch.from_numpy(Y_train).float() , requires_grad=False)
+type(test_vecs_w2v)
+
+net = net()
+criterion = nn.MSELoss()
 optimizer = torch.optim.RMSprop(net.parameters() ,lr = learning_rate)
-inputs = Variable(torch.from_numpy(train_vecs_w2v))
-targets = Variable(torch.from_numpy(Y_train))
 
 for epoch in range(num_epochs):
-	
 	optimizer.zero_grad()
 	outputs = net(inputs)
 	loss = criterion(outputs , targets)
@@ -203,12 +190,6 @@ for epoch in range(num_epochs):
 	optimizer.step()
 
 	if(epoch+1)%5 ==0:
-		print('Epoch [%d%d] , Loss : %.4f'%(epoch+1 , num_epochs , loss.data[0]))
+		print('Epoch [%d/%d] , Loss : %.4f'%(epoch+1 , num_epochs , loss.data[0]))
 
-# Plotting graph
-
-# predicted = neural_net(Variable(torch.from_numpy(X_train))).data.numpy()
-# plt.plot(X_train, Y_train, 'ro', label='Original data')
-# plt.plot(X_train, predicted, label='Fitted line')
-# plt.legend()
-# plt.show()
+torch.save(net.state_dict() , '/home/padam/Documents/git/Saachi/sentiment/model/base_model')
