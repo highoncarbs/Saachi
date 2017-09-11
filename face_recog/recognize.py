@@ -52,17 +52,15 @@ def prepare_data(data_path):
 				labels.append(label)
 	return faces , labels
 
-print("Prepping data..")
-faces , labels = prepare_data("/home/padam/Documents/git/Saachi/data/train")
-print("Total faces: " , len(faces))
-print("Total labels: ", len(labels))
+# print("Prepping data..")
+# faces , labels = prepare_data("/home/padam/Documents/git/Saachi/data/train")
+
+# print("Total faces: " , len(faces))
+# print("Total labels: ", len(labels))
 
 
 # Using LBPH classifier 
 # ** Set API for all classifiers -> Haar Cascade , FisherFace ?
-
-face_algo = cv2.face.LBPHFaceRecognizer_create()
-face_algo.train(faces , np.array(labels))
 
 def drw_rectangle(img , rect):
 	(x,y,w,h) = rect
@@ -72,31 +70,37 @@ def drw_text(img , text , x,y):
 	cv2.putText(img , text,(x,y) , cv2.FONT_HERSHEY_PLAIN , 1.5 , (0,255,0),2)
 
 def predict_face(test_image):
+	faces = np.load('faces.npy')
+	labels = np.load('labels.npy')
+
+	face_algo = cv2.face.LBPHFaceRecognizer_create()
+	face_algo.train(faces , np.array(labels))
+
 	image_temp = test_image.copy()
+	image_temp = cv2.imread(image_temp)
 	face , rect = findFaces(image_temp)
-
 	label = face_algo.predict(face)
-	print label
 	label_text = classes[label[0]]
-	drw_rectangle(image_temp ,rect)
-	drw_text(image_temp , label_text , rect[0] , rect[1]-5)
-	return image_temp
+	return label_text
 
-print("let it predict...")
+	# drw_rectangle(image_temp ,rect)
+	# drw_text(image_temp , label_text , rect[0] , rect[1]-5)
+	# return image_temp
 
-base_tests = "/home/padam/Documents/git/Saachi/data/val/"
+# print("let it predict...")
+
+# base_tests = "/home/padam/Documents/git/Saachi/data/val/"
+
+'''
+# Testing 
+
 test_img1 = cv2.imread(base_tests+"testmodi.jpg")
 test_img2 = cv2.imread(base_tests+"testrahul.jpeg")
-test_img3 = cv2.imread(base_tests+"testkejriwal.jpeg")
+test_img3 = cv2.imread(base_tests+"043.jpeg")
 
-pre_1 = predict_face(test_img1)
-pre_2 = predict_face(test_img2)
+pre_2 = predict_face(test_img1)
 pre_3 = predict_face(test_img3)
 
-print("Prediction complete biatch")
-plt.show( pre1)
-plt.pause(0.5)
-plt.show(pre2)
-plt.pause(0.5)
-plt.show(pre3)
-plt.pause(0.5)
+print pre_2 , pre_3
+
+'''
