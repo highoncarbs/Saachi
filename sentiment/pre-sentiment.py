@@ -1,8 +1,8 @@
 #! /usr/bin/python2.7
 
 '''
-	This package takes care of training of
-	our model on tweets data.
+    This package takes care of training of
+    our model on tweets data.
 '''
 import nltk
 import numpy as np 
@@ -31,51 +31,51 @@ LabeledSentence = gensim.models.doc2vec.LabeledSentence
 data_base = "/home/padam/Documents/data/sentiment-data/"
 
 def ingest_tweets():
-	data = pd.read_csv(data_base+'train_tweet.csv')
-	data.drop(['ItemID' , 'SentimentSource' ,'Date' , 'Blank'] , axis =1 , inplace = True)
-	# data = data[datab.Sentiment.isnull == False]
-	data['Sentiment'] = data['Sentiment'].map(int)
-	data = data[data['SentimentText'].isnull() == False]
-	data.reset_index(inplace=True)
-	data.drop('index' , axis=1 , inplace=True)
-	data['Sentiment'] = data['Sentiment'].map( {4:1, 0:0})
-	return data 
+    data = pd.read_csv(data_base+'train_tweet.csv')
+    data.drop(['ItemID' , 'SentimentSource' ,'Date' , 'Blank'] , axis =1 , inplace = True)
+    # data = data[datab.Sentiment.isnull == False]
+    data['Sentiment'] = data['Sentiment'].map(int)
+    data = data[data['SentimentText'].isnull() == False]
+    data.reset_index(inplace=True)
+    data.drop('index' , axis=1 , inplace=True)
+    data['Sentiment'] = data['Sentiment'].map( {4:1, 0:0})
+    return data 
 
 data = ingest_tweets()
 # print data.head(5)
 
 def tokenize_tweet(tweet):
-	'''
-		Tokenizes the tweets and removes 
-		unwanted features like '#' , '@' , urls
+    '''
+        Tokenizes the tweets and removes 
+        unwanted features like '#' , '@' , urls
 
-		INPUT : tweet - string
-		OUTPUT : tokenized tweet 
-	'''
-	try:
-		tweet = unicode(tweet.decode('utf-8').lower())
-		tokens = tokenizer.tokenize(tweet)
-		tokens = filter(lambda t : not t.startswith('@') , tokens)
-		tokens = filter(lambda t : not t.startswith('#') , tokens)
-		tokens = filter(lambda t : not t.startswith('http') , tokens)
-		return tokens 
-	except:
-		return 'NE' 
+        INPUT : tweet - string
+        OUTPUT : tokenized tweet 
+    '''
+    try:
+        tweet = unicode(tweet.decode('utf-8').lower())
+        tokens = tokenizer.tokenize(tweet)
+        tokens = filter(lambda t : not t.startswith('@') , tokens)
+        tokens = filter(lambda t : not t.startswith('#') , tokens)
+        tokens = filter(lambda t : not t.startswith('http') , tokens)
+        return tokens 
+    except:
+        return 'NE' 
 
 def post_process(data , num = 1200000):
-	'''
-		Apply tokenize function to each SentimentText
-		row.
+    '''
+        Apply tokenize function to each SentimentText
+        row.
 
-		* Deepcopy fixes the issue of SettingWithCopyWarning
-		* in pandas
-	'''
-	data = deepcopy(data.head(num))
-	data['tokens'] = data['SentimentText'].map(tokenize_tweet) 
-	data = data[data.tokens != 'NE']
-	data.reset_index(inplace =True)
-	data.drop('index' , axis = 1 , inplace=True)
-	return data 
+        * Deepcopy fixes the issue of SettingWithCopyWarning
+        * in pandas
+    '''
+    data = deepcopy(data.head(num))
+    data['tokens'] = data['SentimentText'].map(tokenize_tweet) 
+    data = data[data.tokens != 'NE']
+    data.reset_index(inplace =True)
+    data.drop('index' , axis = 1 , inplace=True)
+    return data 
 
 x = post_process(data)
 # print x.head(5)
@@ -83,22 +83,22 @@ x = post_process(data)
 # Word2Vec model
 n_num = 1200000
 X_train , X_test , Y_train , Y_test = train_test_split(np.array(x.head(n_num).tokens) , 
-														np.array(x.head(n_num).Sentiment),
-														test_size = 0.2)
+                                                        np.array(x.head(n_num).Sentiment),
+                                                        test_size = 0.2)
 
 def label_tweet(tweet , label):
-	labeled = []
-	for i,v in tqdm(enumerate(tweet)):
-		l = '%s_%s'%(label,i)
-		labeled.append((LabeledSentence(v , [l])))
-	return labeled
+    labeled = []
+    for i,v in tqdm(enumerate(tweet)):
+        l = '%s_%s'%(label,i)
+        labeled.append((LabeledSentence(v , [l])))
+    return labeled
 
 X_train = label_tweet(X_train , 'TRAIN')
 X_test = label_tweet(X_test,'TEST')
 
 '''
  * Use this only to train a new model , word2vec_model
- 	is already trained on tweet data.
+    is already trained on tweet data.
 
 w2v = Word2Vec(size=200 , min_count=10)
 w2v.build_vocab([x.words for x in tqdm(X_train)])
@@ -111,9 +111,9 @@ w2v.train([x.words for x in tqdm(X_train)] , total_examples = w2v.corpus_count ,
 w2v.wv.save_word2vec_format('./word2vec_model.bin' , binary=True)
 
 # Loading of model
- 	>>> model = gensim.models.KeyedVectors.load_word2vec_format('./word2vec_model.bin', binary=True , unicode_errors='ignore')
- 	Make sure using unicode_errors='ignore' or 'replace' or else
- 	use coding -utf-8- shebang (not sure)
+    >>> model = gensim.models.KeyedVectors.load_word2vec_format('./word2vec_model.bin', binary=True , unicode_errors='ignore')
+    Make sure using unicode_errors='ignore' or 'replace' or else
+    use coding -utf-8- shebang (not sure)
 
 '''
 w2v_load = gensim.models.KeyedVectors.load_word2vec_format('/home/padam/Documents/git/Saachi/sentiment/word2vec_model.bin', binary=True , unicode_errors='ignore')
@@ -125,17 +125,17 @@ tfidf = dict(zip(vectorizer.get_feature_names() , vectorizer.idf_))
 print 'vocab size : ',len(tfidf)
 
 def word_vector(tokens , size = 200):
-	vec = np.zeros(size).reshape(1 , size)
-	count = 0
-	for word in tokens:
-		try: 
-			vec += w2v_load[word].reshape(1,size)*tfidf[word] 
-			count += 1 
-		except KeyError: # Handle when token not id corpus
-			continue
-	if count != 0:
-		vec /= count 
-	return vec
+    vec = np.zeros(size).reshape(1 , size)
+    count = 0
+    for word in tokens:
+        try: 
+            vec += w2v_load[word].reshape(1,size)*tfidf[word] 
+            count += 1 
+        except KeyError: # Handle when token not id corpus
+            continue
+    if count != 0:
+        vec /= count 
+    return vec
 
 # Normalizing the data
 
@@ -159,16 +159,16 @@ num_epochs = 60
 D_in , H , D_out = 200 , 32 ,1
 
 class net(nn.Module):
-	def __init__(self):
-		super(net , self).__init__()
-		self.l1 = nn.Linear(200, 32)
-		self.relu = nn.ReLU()
-		self.l2 = nn.Linear(32 , 1)
-	def forward(self , x):
-		x = self.relu(self.l1(x))
-		x = self.l2(x)
-		x = F.sigmoid(x)
-		return x 
+    def __init__(self):
+        super(net , self).__init__()
+        self.l1 = nn.Linear(200, 32)
+        self.relu = nn.ReLU()
+        self.l2 = nn.Linear(32 , 1)
+    def forward(self , x):
+        x = self.relu(self.l1(x))
+        x = self.l2(x)
+        x = F.sigmoid(x)
+        return x 
 
 
 criterion = nn.CrossEntropyLoss()
@@ -183,13 +183,13 @@ criterion = nn.MSELoss()
 optimizer = torch.optim.RMSprop(net.parameters() ,lr = learning_rate)
 
 for epoch in range(num_epochs):
-	optimizer.zero_grad()
-	outputs = net(inputs)
-	loss = criterion(outputs , targets)
-	loss.backward()
-	optimizer.step()
+    optimizer.zero_grad()
+    outputs = net(inputs)
+    loss = criterion(outputs , targets)
+    loss.backward()
+    optimizer.step()
 
-	if(epoch+1)%5 ==0:
-		print('Epoch [%d/%d] , Loss : %.4f'%(epoch+1 , num_epochs , loss.data[0]))
+    if(epoch+1)%5 ==0:
+        print('Epoch [%d/%d] , Loss : %.4f'%(epoch+1 , num_epochs , loss.data[0]))
 
 torch.save(net.state_dict() , '/home/padam/Documents/git/Saachi/sentiment/model/base_model')
