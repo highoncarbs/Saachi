@@ -23,10 +23,10 @@ def getSentiment(politician):
 def getRecog():
     if request.method == 'POST':
         file = request.files['file']
-        ex = os.path.splittext(file.filename)[1]
-        fname = str(uuid.uudid4()) + ex
+        ex = os.path.split(file.filename)[1]
+        fname = "recog_img.jpg"
         file.save(os.path.join(UPLOAD_FOLDER , fname))
-        return json.dumps({'filename' : fname})
+        return jsonify({'filename' : fname})
 
 if __name__ =="__main__":
-    app.run(port=5050,debug=True)
+    app.run(port=5000,debug=True)
