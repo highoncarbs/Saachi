@@ -25,8 +25,11 @@ def getRecog():
         file = request.files['file']
         ex = os.path.split(file.filename)[1]
         fname = "recog_img.jpg"
-        file.save(os.path.join(UPLOAD_FOLDER , fname))
-        return jsonify({'filename' : fname})
+        file_path = os.path.join(UPLOAD_FOLDER , fname)
+        file.save(file_path)
+        
+        face = recognize.predict_face(file_path)
+        return jsonify({'name': face})
 
 if __name__ =="__main__":
-    app.run(port=5000,debug=True)
+    app.run(port=5000,debug=False)

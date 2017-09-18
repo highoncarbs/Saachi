@@ -3,12 +3,10 @@
 import os
 import cv2
 import numpy as np 
-import matplotlib.pyplot as plt 
 import time
-import matplotlib
-matplotlib.pyplot.ion()
 
-classes = ["", "Narendra Modi" , "Rahul Gandi"]
+
+classes = ["", "Narendra Modi" , "Rahul Gandhi"]
 
 def converttoRGB(image):
     return cv2.cvtColor(image , cv2.COLOR_BGR2RGB)
@@ -75,7 +73,7 @@ def drw_text(img , text , x,y):
 
 def predict_face(test_image):
 
-    image_temp = cv2.imread(image_temp)
+    image_temp = cv2.imread(test_image)
     face , rect = findFaces(image_temp)
     label = face_algo.predict(face)
     label_text = classes[label[0]]
@@ -92,14 +90,15 @@ base_tests = "/home/padam/Documents/git/Saachi/data/val/"
 '''
 # Testing 
 
-test_img1 = cv2.imread(base_tests+"testmodi.jpg")
 test_img2 = cv2.imread(base_tests+"testrahul.jpeg")
 test_img3 = cv2.imread(base_tests+"043.jpeg")
 
 
-'''
+# '''
 
-pre_2 = predict_face(test_img1)
-pre_3 = predict_face(test_img3)
+# pre_3 = predict_face(test_img3)
 
-print pre_2 , pre_3
+# print pre_2 , pre_3
+    # test_img1 = base_tests+"testmodi.jpg"
+    # pre_2 = predict_face(test_img1)
+    # print pre_2
