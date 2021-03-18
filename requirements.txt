@@ -16,7 +16,7 @@ olefile==0.44
 opencv-contrib-python==3.3.0.10
 opencv-python==3.3.0.10
 pbr==3.1.1
-Pillow==4.2.1
+Pillow==8.1.1
 pkg-resources==0.0.0
 requests==2.18.4
 requests-oauthlib==0.8.0
